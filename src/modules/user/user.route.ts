@@ -60,4 +60,10 @@ router.post(
   UserControllers.resetPassword,
 );
 
+router.put(
+  "/followunfollow",
+  auth(User_Role.admin, User_Role.user),
+  UserControllers.followAndUnfollowUser,
+);
+
 export const UserRoutes = router;

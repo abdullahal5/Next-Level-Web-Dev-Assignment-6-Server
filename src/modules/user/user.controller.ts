@@ -136,7 +136,7 @@ const forgetPassword = catchAsync(async (req, res) => {
   SendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Reset link is generated successfully!",
+    message: "OTP Send to your email!!!",
     data: result,
   });
 });
@@ -154,6 +154,20 @@ const resetPassword = catchAsync(async (req, res) => {
   });
 });
 
+const followAndUnfollowUser = catchAsync(async (req, res) => {
+  const user = await UserServices.followAndUnfollowUserIntoDB(
+    req.body.id,
+    req?.user?.userId,
+  );
+
+  SendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Followed Successfully",
+    data: user,
+  });
+});
+
 export const UserControllers = {
   getSingleUser,
   userRegister,
@@ -165,4 +179,5 @@ export const UserControllers = {
   changePassword,
   forgetPassword,
   resetPassword,
+  followAndUnfollowUser,
 };

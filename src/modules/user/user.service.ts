@@ -7,6 +7,7 @@ import { createToken, verifyToken } from "./user.utility";
 import config from "../../config";
 import { JwtPayload } from "jsonwebtoken";
 import { SendEmail } from "../../utils/sendEmail";
+import { Types } from "mongoose";
 
 const createUserIntoDB = async (payload: IUser) => {
   const isUserExists = await UserModel.findOne({ email: payload.email });
@@ -225,7 +226,7 @@ const forgetPassword = async (email: string) => {
     "10m",
   );
 
-  const resetUILink = `${config.Reset_pass_ui_link}?id=${user?._id}&token=${resetToken}`;
+  const resetUILink = `${config.Reset_pass_ui_link}/reset-password?id=${user?._id}&token=${resetToken}`;
 
   const emailHTML = `
     <div style="text-align: center; padding: 20px;">
@@ -275,6 +276,52 @@ const resetPassword = async (
   );
 };
 
+const followAndUnfollowUserIntoDB = async (
+  followerId: string,
+  targetUserId: string,
+) => {
+  try {
+    const followerObjectId = new Types.ObjectId(followerId);
+    const targetUserObjectId = new Types.ObjectId(targetUserId);
+
+    const follower = await UserModel.findById(followerObjectId);
+    const targetUser = await UserModel.findById(targetUserObjectId);
+
+    if (!follower || !targetUser) {
+      throw new Error("User not found");
+    }
+
+    const isFollowing =
+      follower?.followers?.includes(targetUserObjectId) ?? false;
+
+    if (isFollowing) {
+      await UserModel.updateOne(
+        { _id: followerObjectId },
+        { $pull: { followers: targetUserObjectId } },
+      );
+
+      await UserModel.updateOne(
+        { _id: targetUserObjectId },
+        { $pull: { following: followerObjectId } },
+      );
+    } else {
+      await UserModel.updateOne(
+        { _id: followerObjectId },
+        { $push: { followers: targetUserObjectId } },
+      );
+      await UserModel.updateOne(
+        { _id: targetUserObjectId },
+        { $push: { following: followerObjectId } },
+      );
+    }
+
+    return isFollowing ? "Unfollowed successfully" : "Followed successfully";
+  } catch (error) {
+    console.error("Error following/unfollowing user:", error);
+    throw error;
+  }
+};
+
 export const UserServices = {
   createUserIntoDB,
   loginUser,
@@ -286,4 +333,5 @@ export const UserServices = {
   changePassword,
   forgetPassword,
   resetPassword,
+  followAndUnfollowUserIntoDB,
 };

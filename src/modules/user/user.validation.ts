@@ -11,7 +11,7 @@ const createUserSchema = z.object({
     username: z.string(),
     role: z.enum(["user", "admin"], {
       required_error: "Role is required.",
-    }),
+    }).optional(),
     profilePicture: z.string().optional(),
     bio: z
       .string()
