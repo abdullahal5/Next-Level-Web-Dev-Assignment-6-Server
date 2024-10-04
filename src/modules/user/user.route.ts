@@ -25,13 +25,13 @@ router.get("/get-all-user", auth(User_Role.admin), UserControllers.getAllUser);
 
 router.get(
   "/get-single-user/:id",
-  auth(User_Role.admin),
+  auth(User_Role.user),
   UserControllers.getSingleUser,
 );
 
 router.put(
   "/update-single-user/:id",
-  auth(User_Role.admin),
+  auth(User_Role.user),
   UserControllers.updateSingleUser,
 );
 
@@ -64,6 +64,12 @@ router.put(
   "/followunfollow",
   auth(User_Role.admin, User_Role.user),
   UserControllers.followAndUnfollowUser,
+);
+
+router.put(
+  "/favourite-toggle",
+  auth(User_Role.admin, User_Role.user),
+  UserControllers.favouritePost,
 );
 
 export const UserRoutes = router;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 
@@ -9,7 +10,7 @@ const notFound = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
-const notFoundHandlerWithParams: (params: any) => any = (params) => {
+const notFoundHandlerWithParams: (params: any) => any = () => {
   return (req: Request, res: Response, next: NextFunction) => {
     notFound(req, res, next);
   };

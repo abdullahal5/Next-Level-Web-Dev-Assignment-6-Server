@@ -8,6 +8,7 @@ import config from "../../config";
 import { JwtPayload } from "jsonwebtoken";
 import { SendEmail } from "../../utils/sendEmail";
 import { Types } from "mongoose";
+import PostModel from "../post/post.model";
 
 const createUserIntoDB = async (payload: IUser) => {
   const isUserExists = await UserModel.findOne({ email: payload.email });
@@ -288,7 +289,7 @@ const followAndUnfollowUserIntoDB = async (
     const targetUser = await UserModel.findById(targetUserObjectId);
 
     if (!follower || !targetUser) {
-      throw new Error("User not found");
+      throw new AppError(httpStatus.NOT_FOUND, "User not found");
     }
 
     const isFollowing =
@@ -322,6 +323,32 @@ const followAndUnfollowUserIntoDB = async (
   }
 };
 
+const favouritePost = async (id: string, userOwnId: string) => {
+  const postId = new Types.ObjectId(id);
+  const userId = new Types.ObjectId(userOwnId);
+
+  const isPostExist = await PostModel.findById(postId);
+  const isUserExist = await UserModel.findById(userId);
+
+  if (!isPostExist) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Not found");
+  }
+
+  const checkIsFavouriteExist = isUserExist?.favourite?.includes(postId);
+
+  if (checkIsFavouriteExist) {
+    await UserModel.findOneAndUpdate(
+      { _id: userId },
+      { $pull: { favourite: id } },
+    );
+  } else {
+    await UserModel.findOneAndUpdate(
+      { _id: userId },
+      { $push: { favourite: id } },
+    );
+  }
+};
+
 export const UserServices = {
   createUserIntoDB,
   loginUser,
@@ -334,4 +361,5 @@ export const UserServices = {
   forgetPassword,
   resetPassword,
   followAndUnfollowUserIntoDB,
+  favouritePost,
 };

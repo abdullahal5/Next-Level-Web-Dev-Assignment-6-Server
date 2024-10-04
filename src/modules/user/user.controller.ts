@@ -168,6 +168,17 @@ const followAndUnfollowUser = catchAsync(async (req, res) => {
   });
 });
 
+const favouritePost = catchAsync(async (req, res) => {
+  const user = await UserServices.favouritePost(req.body.id, req.user?.userId);
+
+  SendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Favourite",
+    data: user,
+  });
+});
+
 export const UserControllers = {
   getSingleUser,
   userRegister,
@@ -180,4 +191,5 @@ export const UserControllers = {
   forgetPassword,
   resetPassword,
   followAndUnfollowUser,
+  favouritePost,
 };

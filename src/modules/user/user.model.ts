@@ -52,6 +52,12 @@ const UserSchema = new Schema<IUser, IUserModel>(
         ref: "User",
       },
     ],
+    favourite: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "Post",
+      },
+    ],
     isVerified: {
       type: Boolean,
       default: false,

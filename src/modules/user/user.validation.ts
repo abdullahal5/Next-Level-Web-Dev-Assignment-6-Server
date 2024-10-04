@@ -9,9 +9,11 @@ const createUserSchema = z.object({
     password: z.string(),
     // passwordChangedAt: z.date(),
     username: z.string(),
-    role: z.enum(["user", "admin"], {
-      required_error: "Role is required.",
-    }).optional(),
+    role: z
+      .enum(["user", "admin"], {
+        required_error: "Role is required.",
+      })
+      .optional(),
     profilePicture: z.string().optional(),
     bio: z
       .string()
@@ -22,6 +24,10 @@ const createUserSchema = z.object({
       .optional()
       .default([]),
     following: z
+      .array(z.instanceof(mongoose.Types.ObjectId))
+      .optional()
+      .default([]),
+    favourite: z
       .array(z.instanceof(mongoose.Types.ObjectId))
       .optional()
       .default([]),
@@ -67,14 +73,14 @@ const changePasswordValidationSchema = z.object({
 const forgetPasswordValidationSchema = z.object({
   body: z.object({
     email: z.string({
-      required_error: "User id is required!"
-    })
-  })
-})
+      required_error: "User id is required!",
+    }),
+  }),
+});
 
 export const UserValidation = {
   createUserSchema,
   loginUserValidationSchema,
   changePasswordValidationSchema,
-  forgetPasswordValidationSchema
+  forgetPasswordValidationSchema,
 };

@@ -10,6 +10,7 @@ export interface IUser {
   bio?: string;
   followers?: mongoose.Types.ObjectId[];
   following?: mongoose.Types.ObjectId[];
+  favourite?: mongoose.Types.ObjectId[];
   isVerified: boolean;
   verificationBadge?: string;
   dateOfBirth?: Date;
