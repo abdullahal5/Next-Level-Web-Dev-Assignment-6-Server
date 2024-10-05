@@ -61,10 +61,25 @@ const deletePost = catchAsync(async (req, res) => {
   });
 });
 
+const upvoteAndDownvote = catchAsync(async (req, res) => {
+  const user = await postServices.upvotesAndDownvotesFromDB(
+    req.params.id,
+    req.body.type,
+  );
+
+  SendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Favourite",
+    data: user,
+  });
+});
+
 export const PostController = {
   createPost,
   updatePost,
   getAllPosts,
   getSinglePost,
   deletePost,
+  upvoteAndDownvote,
 };

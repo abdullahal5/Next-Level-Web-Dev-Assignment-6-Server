@@ -7,6 +7,7 @@ type JwtpayloadData = {
   email: string | undefined;
   role: string | undefined;
   gender: string | undefined;
+  status: string | undefined
   profileImage: string | undefined;
 };
 

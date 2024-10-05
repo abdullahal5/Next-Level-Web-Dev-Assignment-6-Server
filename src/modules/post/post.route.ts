@@ -12,7 +12,8 @@ router.post(
 
 router.get("/get-all", PostController.getAllPosts);
 router.get("/get-single/:id", PostController.getSinglePost);
-router.put("/delete", PostController.updatePost);
+router.put("/update", PostController.updatePost);
+router.put("/upvoteDownvote/:id", PostController.upvoteAndDownvote);
 router.delete("/delete", PostController.deletePost);
 
 export const PostRoutes = router;

@@ -1,10 +1,22 @@
 import AppError from "../../errors/AppError";
+import PostModel from "../post/post.model";
 import { IComment } from "./comment.interface";
 import CommentModel from "./comment.model";
 import httpStatus from "http-status";
 
 const createCommentIntoDB = async (body: IComment) => {
   const result = await CommentModel.create(body);
+
+  await PostModel.updateOne(
+    { _id: body.postId },
+    { $push: { comments: result._id } },
+  );
+
+  await PostModel.updateOne(
+    { _id: body.postId },
+    { $inc: { commentsCount: 1 } },
+  );
+
   return result;
 };
 
@@ -77,23 +89,28 @@ const incrementVotesInDB = async (
   return updatedComment;
 };
 
-const deleteCommentFromDB = async (
-  commentId: string,
-  userId: string,
-  userRole: string,
-) => {
+const deleteCommentFromDB = async (commentId: string, userId: string) => {
   const comment = await CommentModel.findById(commentId);
 
   if (!comment) {
     throw new AppError(httpStatus.NOT_FOUND, "Comment not found");
   }
 
-  if (comment.userId.toString() !== userId && userRole !== "admin") {
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      "You are not authorized to delete this comment",
-    );
+  const checkIsUser = comment.userId.toString() === userId.toString();
+
+  if (!checkIsUser) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "forbidden");
   }
+
+  await PostModel.updateOne(
+    { _id: comment.postId },
+    { $pull: { comments: comment._id } },
+  );
+
+  await PostModel.updateOne(
+    { _id: comment.postId },
+    { $inc: { commentsCount: -1 } },
+  );
 
   const deletedComment = await CommentModel.findByIdAndDelete(commentId);
   return deletedComment;

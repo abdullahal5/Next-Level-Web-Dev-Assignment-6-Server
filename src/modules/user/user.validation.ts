@@ -36,6 +36,7 @@ const createUserSchema = z.object({
     dateOfBirth: z.date().optional(),
     location: z.string().optional(),
     gender: z.enum(["Male", "Female", "Other"]).optional(),
+    status: z.enum(["Active", "Blocked"]).optional(),
     gardeningExperienceLevel: z
       .enum(["Beginner", "Intermediate", "Expert"])
       .optional(),

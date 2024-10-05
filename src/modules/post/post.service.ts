@@ -1,5 +1,7 @@
+import httpStatus from "http-status";
 import { IPost } from "./post.interface";
 import PostModel from "./post.model";
+import AppError from "../../errors/AppError";
 
 const createPostIntoDB = async (body: IPost) => {
   const result = await PostModel.create(body);
@@ -17,7 +19,14 @@ const getAllPostsFromDB = async () => {
 };
 
 const getPostByIdFromDB = async (id: string) => {
-  const result = await PostModel.findById(id).populate("author comments");
+  const result = await PostModel.findById(id)
+    .populate("author")
+    .populate({
+      path: "comments",
+      populate: {
+        path: "userId",
+      },
+    });
   return result;
 };
 
@@ -26,10 +35,25 @@ const deletePostFromDB = async (id: string) => {
   return result;
 };
 
+const upvotesAndDownvotesFromDB = async (postID: string, voteType: string) => {
+  const isExistPost = await PostModel.findById(postID);
+
+  if (!isExistPost) {
+    throw new AppError(httpStatus.NOT_FOUND, "Not found");
+  }
+
+  if (voteType === "increment") {
+    await PostModel.updateOne({ _id: postID }, { $inc: { upvotes: 1 } });
+  } else {
+    await PostModel.updateOne({ _id: postID }, { $inc: { downvotes: 1 } });
+  }
+};
+
 export const postServices = {
   createPostIntoDB,
   updatePostInDB,
   getAllPostsFromDB,
   getPostByIdFromDB,
   deletePostFromDB,
+  upvotesAndDownvotesFromDB,
 };

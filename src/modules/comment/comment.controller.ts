@@ -66,19 +66,19 @@ const getAllComments = catchAsync(async (req, res) => {
 //   });
 // });
 
-// const deleteComment = catchAsync(async (req, res) => {
-//   const commentId = req.params.id;
-//   const userId = req.user.id;
-//   const userRole = req.user.role;
+const deleteComment = catchAsync(async (req, res) => {
+  const commentId = req.params.id;
+  const userId = req.user?.userId;
 
-//   await CommentServices.deleteCommentFromDB(commentId, userId, userRole);
+  await CommentServices.deleteCommentFromDB(commentId, userId);
 
-//   SendResponse(res, {
-//     success: true,
-//     statusCode: httpStatus.OK,
-//     message: "Comment deleted successfully",
-//   });
-// });
+  SendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Comment deleted successfully",
+    data: undefined,
+  });
+});
 
 export const CommentController = {
   createComment,
@@ -86,5 +86,5 @@ export const CommentController = {
   getAllComments,
   //   updateComment,
   //   incrementVote,
-  //   deleteComment,
+  deleteComment,
 };

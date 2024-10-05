@@ -92,6 +92,11 @@ const UserSchema = new Schema<IUser, IUserModel>(
       type: [String],
       required: false,
     },
+    status: {
+      type: String,
+      enum: ["Active", "Blocked"],
+      default: "Active"
+    },
     socialMediaLinks: {
       facebook: {
         type: String,

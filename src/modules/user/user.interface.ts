@@ -19,6 +19,7 @@ export interface IUser {
   gardeningExperienceLevel?: "Beginner" | "Intermediate" | "Expert";
   phone?: string;
   interests?: string[];
+  status?: "Active" | "Blocked"
   socialMediaLinks?: {
     facebook?: string;
     twitter?: string;
@@ -37,6 +38,7 @@ export interface JwtpayloadData {
   username: string;
   email: string;
   role: string;
+  status: string | undefined;
   gender: string | undefined;
   profileImage: string | undefined;
 }

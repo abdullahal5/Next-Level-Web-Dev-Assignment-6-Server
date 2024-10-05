@@ -27,6 +27,7 @@ const createUserIntoDB = async (payload: IUser) => {
     email: newUser?.email,
     role: newUser?.role,
     gender: newUser?.gender,
+    status: newUser?.status,
     profileImage: newUser?.profilePicture,
   };
 
@@ -78,6 +79,7 @@ const loginUser = async (payload: ILoginInfo) => {
     username: user?.username,
     email: user?.email,
     role: user?.role,
+    status: user?.status,
     gender: user?.gender,
     profileImage: user?.profilePicture,
   };
@@ -121,6 +123,7 @@ const refreshToken = async (refreshToken: string) => {
     email: isUserExist?.email,
     role: isUserExist?.role,
     gender: isUserExist?.gender,
+    status: isUserExist?.status,
     profileImage: isUserExist?.profilePicture,
   };
 
@@ -136,7 +139,9 @@ const refreshToken = async (refreshToken: string) => {
 };
 
 const getSingleUserFromDB = async (userId: string) => {
-  const user = await UserModel.findById(userId).select("-password");
+  const user = await UserModel.findById(userId)
+    .select("-password")
+    .populate("favourite");
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
@@ -217,6 +222,7 @@ const forgetPassword = async (email: string) => {
     username: user?.username,
     email: user?.email,
     role: user?.role,
+    status: user?.status,
     gender: user?.gender,
     profileImage: user?.profilePicture,
   };
