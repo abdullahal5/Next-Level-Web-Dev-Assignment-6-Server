@@ -62,10 +62,6 @@ const UserSchema = new Schema<IUser, IUserModel>(
       type: Boolean,
       default: false,
     },
-    verificationBadge: {
-      type: String,
-      default: null,
-    },
     dateOfBirth: {
       type: Date,
       required: false,
@@ -89,7 +85,7 @@ const UserSchema = new Schema<IUser, IUserModel>(
       required: false,
     },
     interests: {
-      type: [String],
+      type: String,
       required: false,
     },
     status: {

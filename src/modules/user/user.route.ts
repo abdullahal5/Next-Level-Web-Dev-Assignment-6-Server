@@ -25,13 +25,13 @@ router.get("/get-all-user", auth(User_Role.admin), UserControllers.getAllUser);
 
 router.get(
   "/get-single-user/:id",
-  auth(User_Role.user),
+  auth(User_Role.user, User_Role.admin),
   UserControllers.getSingleUser,
 );
 
 router.put(
   "/update-single-user/:id",
-  auth(User_Role.user),
+  auth(User_Role.user, User_Role.admin),
   UserControllers.updateSingleUser,
 );
 
@@ -70,6 +70,12 @@ router.put(
   "/favourite-toggle",
   auth(User_Role.admin, User_Role.user),
   UserControllers.favouritePost,
+);
+
+router.put(
+  "/status-toggle/:id",
+  auth(User_Role.admin),
+  UserControllers.toggleStatus,
 );
 
 export const UserRoutes = router;

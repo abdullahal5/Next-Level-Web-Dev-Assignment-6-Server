@@ -179,6 +179,17 @@ const favouritePost = catchAsync(async (req, res) => {
   });
 });
 
+const toggleStatus = catchAsync(async (req, res) => {
+  const user = await UserServices.statusToggleFromDB(req.params.id);
+
+  SendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Status Updated",
+    data: user,
+  });
+});
+
 export const UserControllers = {
   getSingleUser,
   userRegister,
@@ -192,4 +203,5 @@ export const UserControllers = {
   resetPassword,
   followAndUnfollowUser,
   favouritePost,
+  toggleStatus,
 };

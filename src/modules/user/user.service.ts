@@ -2,7 +2,11 @@ import bcrypt from "bcrypt";
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import { UserModel } from "./user.model";
-import { ILoginInfo, IUser, JwtpayloadData } from "./user.interface";
+import {
+  ILoginInfo,
+  IUser,
+  JwtpayloadData,
+} from "./user.interface";
 import { createToken, verifyToken } from "./user.utility";
 import config from "../../config";
 import { JwtPayload } from "jsonwebtoken";
@@ -150,11 +154,69 @@ const getSingleUserFromDB = async (userId: string) => {
   return user;
 };
 
+interface ISocialMediaLinks {
+  facebook?: string;
+  twitter?: string;
+  instagram?: string;
+  linkedin?: string;
+}
+
+export interface IUserEditProfile {
+  _id: string;
+  username: string;
+  bio: string;
+  gardeningExperienceLevel: string;
+  location: string;
+  dateOfBirth: string;
+  profilePicture: string;
+  phone: string;
+  interest: string;
+  gender: string;
+}
+
 const updateSingleUserFromDB = async (
   userId: string,
-  updateData: Partial<IUser>,
+  updateData: Partial<IUserEditProfile> & Partial<ISocialMediaLinks>,
 ) => {
-  const user = await UserModel.findByIdAndUpdate(userId, updateData, {
+  const {
+    _id,
+    username,
+    bio,
+    gardeningExperienceLevel,
+    location,
+    phone,
+    dateOfBirth,
+    profilePicture,
+    interest,
+    gender,
+    facebook,
+    twitter,
+    instagram,
+    linkedin,
+  } = updateData;
+
+  const socialMediaLinks: ISocialMediaLinks = {
+    facebook,
+    twitter,
+    instagram,
+    linkedin,
+  };
+
+  const finalUpdateData = {
+    _id,
+    username,
+    bio,
+    gardeningExperienceLevel,
+    location,
+    phone,
+    interests: interest,
+    dateOfBirth,
+    profilePicture,
+    gender,
+    socialMediaLinks,
+  };
+
+  const user = await UserModel.findByIdAndUpdate(userId, finalUpdateData, {
     new: true,
   }).select("-password");
 
@@ -162,7 +224,23 @@ const updateSingleUserFromDB = async (
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
 
-  return user;
+  const jwtPayload: JwtpayloadData = {
+    userId: user?._id,
+    username: user?.username,
+    email: user?.email,
+    role: user?.role,
+    gender: user?.gender,
+    status: user?.status,
+    profileImage: user?.profilePicture,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.Access_Token as string,
+    config.Access_Token_Expires as string,
+  );
+
+  return accessToken;
 };
 
 const deleteSingleUserFromDB = async (userId: string) => {
@@ -355,6 +433,22 @@ const favouritePost = async (id: string, userOwnId: string) => {
   }
 };
 
+const statusToggleFromDB = async (id: string) => {
+  const findUser = await UserModel.findById(id);
+
+  if (!findUser) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  const checkStatusOfUser = findUser.status;
+
+  if (checkStatusOfUser === "Active") {
+    await UserModel.findByIdAndUpdate({ _id: id }, { status: "Blocked" });
+  } else {
+    await UserModel.findByIdAndUpdate({ _id: id }, { status: "Active" });
+  }
+};
+
 export const UserServices = {
   createUserIntoDB,
   loginUser,
@@ -368,4 +462,5 @@ export const UserServices = {
   resetPassword,
   followAndUnfollowUserIntoDB,
   favouritePost,
+  statusToggleFromDB,
 };

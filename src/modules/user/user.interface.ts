@@ -12,14 +12,13 @@ export interface IUser {
   following?: mongoose.Types.ObjectId[];
   favourite?: mongoose.Types.ObjectId[];
   isVerified: boolean;
-  verificationBadge?: string;
   dateOfBirth?: Date;
   location?: string;
   gender?: "Male" | "Female" | "Other";
   gardeningExperienceLevel?: "Beginner" | "Intermediate" | "Expert";
   phone?: string;
-  interests?: string[];
-  status?: "Active" | "Blocked"
+  interests?: string;
+  status?: "Active" | "Blocked";
   socialMediaLinks?: {
     facebook?: string;
     twitter?: string;
@@ -53,4 +52,25 @@ export interface IUserModel extends Model<IUser> {
     passwordChangedTimeStamp: Date,
     jwtIssuedTimestamp: number,
   ): boolean;
+}
+
+interface ISocialMediaLinks {
+  facebook?: string;
+  twitter?: string;
+  instagram?: string;
+  linkedin?: string;
+}
+
+export interface IUserEditProfile {
+  _id: string;
+  username: string;
+  bio: string;
+  gardeningExperienceLevel: string;
+  location: string;
+  dateOfBirth: string
+  profilePicture: string
+  phone: string;
+  interest: string;
+  gender: string;
+  socialMediaLinks?: ISocialMediaLinks;
 }

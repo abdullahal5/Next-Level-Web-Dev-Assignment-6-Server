@@ -32,7 +32,6 @@ const createUserSchema = z.object({
       .optional()
       .default([]),
     isVerified: z.boolean().default(false),
-    verificationBadge: z.string().optional(),
     dateOfBirth: z.date().optional(),
     location: z.string().optional(),
     gender: z.enum(["Male", "Female", "Other"]).optional(),
@@ -40,7 +39,7 @@ const createUserSchema = z.object({
     gardeningExperienceLevel: z
       .enum(["Beginner", "Intermediate", "Expert"])
       .optional(),
-    interests: z.array(z.string()).optional().default([]),
+    interests: z.string().optional(),
     phone: z.string().optional(),
     socialMediaLinks: z
       .object({
