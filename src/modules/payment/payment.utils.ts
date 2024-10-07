@@ -32,7 +32,7 @@ export const initiatePayment = async (payload: PaymentData) => {
     store_id: config.Store_id,
     signature_key: config.SIGNETURE_KEY,
     tran_id: payload.transactionId,
-    success_url: `${config.Backend_URL}/api/v1/payment/confirmation?transactionId=${payload.transactionId}&status=success`,
+    success_url: `${config.Backend_URL}/api/v1/payment/confirmation?transactionId=${payload.transactionId}&status=success&payload=${encodeURIComponent(JSON.stringify(payload))}`,
     fail_url: `${config.Backend_URL}/api/v1/payment/confirmation?transactionId=${payload.transactionId}&status=failed`,
     cancel_url: `${config.FrontEnd_URL}`,
     amount: payload.price,
@@ -69,3 +69,22 @@ export const verifyPayment = async (tnxId: string | undefined) => {
     throw new Error("Payment validation failed!");
   }
 };
+
+export function calculateExpiryDate(expiry: string) {
+  const currentDate = new Date();
+
+  if (expiry === "7 Days") {
+    return new Date(
+      currentDate.getTime() + 7 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+  } else if (expiry === "1 Day") {
+    return new Date(
+      currentDate.getTime() + 1 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+  } else if (expiry === "1 Month") {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    return currentDate.toISOString();
+  } else {
+    return expiry;
+  }
+}

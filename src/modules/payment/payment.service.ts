@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import AppError from "../../errors/AppError";
 import { IPayment, PaymentData } from "./payment.interface";
 import { PaymentModel } from "./payment.model";
 import httpStatus from "http-status";
 import {
+  calculateExpiryDate,
   generateUniqueId,
   initiatePayment,
   verifyPayment,
@@ -59,68 +61,79 @@ const deletePaymentFromDB = async (paymentId: string, userId: string) => {
 
 const confirmationService = async (
   transactionId?: string | undefined,
+  status?: string | undefined,
   payload?: string | undefined,
 ) => {
-  // console.log(transactionId)
-  const res = await verifyPayment(transactionId);
-
-  let result;
   let message = "";
+  let parsedPayload;
 
-  if (res && res.pay_status === "Successful") {
-    message = "Payment successful";
+  try {
+    const res = await verifyPayment(transactionId);
 
-    const filePath = join(__dirname, "../../../views/confirmation.html");
-    let template = readFileSync(filePath, "utf-8");
+    try {
+      parsedPayload = JSON.parse(payload || "{}");
+    } catch (error) {
+      throw new Error("Invalid JSON format in payload");
+    }
 
-    template = template.replace("{{message}}", message);
+    if (
+      !parsedPayload.user ||
+      !parsedPayload.price ||
+      !parsedPayload.transactionId ||
+      !parsedPayload.title ||
+      !parsedPayload.expiry
+    ) {
+      throw new Error("Missing required payment data fields.");
+    }
 
-    return template;
-  } else {
-    const message = "Payment failed";
+    const paymentDataPayload = parsedPayload as PaymentData;
+
+    const paymentData = {
+      user: paymentDataPayload.user,
+      amount: Number(paymentDataPayload.price),
+      status: res && res.pay_status === "Successful" ? "Completed" : "Failed",
+      transactionId: paymentDataPayload.transactionId,
+      planTitle: paymentDataPayload.title,
+      planPrice: Number(paymentDataPayload.price),
+      expiryDate: calculateExpiryDate(paymentDataPayload.expiry),
+    };
+
+    if (isNaN(paymentData.amount) || isNaN(paymentData.planPrice)) {
+      throw new Error("Invalid price data: amount or planPrice is NaN.");
+    }
+
+    await UserModel.findByIdAndUpdate(
+      { _id: paymentData.user },
+      { isVerified: true },
+    );
+    await PaymentModel.create(paymentData);
+
+    if (res && res.pay_status === "Successful") {
+      message = "Payment successful";
+      const filePath = join(__dirname, "../../../views/confirmation.html");
+      let template = readFileSync(filePath, "utf-8");
+      template = template.replace("{{message}}", message);
+      return template;
+    } else {
+      throw new Error("Payment validation failed.");
+    }
+  } catch (error: any) {
+    console.error("Payment Error:", error.message);
+    message = "Payment failed";
+
     const filePath = join(__dirname, "../../../views/failConfirmation.html");
-
     let template;
     try {
       template = readFileSync(filePath, "utf-8");
-    } catch (error) {
+    } catch (fileError) {
       throw new AppError(
         httpStatus.INTERNAL_SERVER_ERROR,
         "Failed to load failConfirmation template",
       );
     }
-
     template = template.replace("{{message}}", message);
     return template;
   }
-
-  // if (res && res.pay_status === "Successful") {
-
-  //   message = "Payment successful";
-
-  //   const filePath = join(__dirname, "../../../views/confirmation.html");
-  //   let template = readFileSync(filePath, "utf-8");
-
-  //   template = template.replace("{{message}}", message);
-
-  //   return template;
-  // } else {
-  //   const message = "Payment failed";
-  //   const filePath = join(__dirname, "../../../views/failConfirmation.html");
-
-  //   let template;
-  //   try {
-  //     template = readFileSync(filePath, "utf-8");
-  //   } catch (error) {
-  //     throw new AppError(
-  //       httpStatus.INTERNAL_SERVER_ERROR,
-  //       "Failed to load failConfirmation template",
-  //     );
-  //   }
-
-  //   template = template.replace("{{message}}", message);
-  //   return template;
-  // }
 };
 
 // Uncomment if you need to implement update functionality

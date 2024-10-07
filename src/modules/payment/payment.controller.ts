@@ -38,10 +38,11 @@ const getAllPayments = catchAsync(async (req, res) => {
 });
 
 const confirmationController = catchAsync(async (req, res) => {
-  const { transactionId, status } = req.query;
+  const { transactionId, status, payload } = req.query;
   const result = await PaymentServices.confirmationService(
     transactionId as string,
     status as string,
+    payload as string
   );
 
   res.send(result);
