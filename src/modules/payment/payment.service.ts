@@ -13,13 +13,14 @@ import {
 import { UserModel } from "../user/user.model";
 import { join } from "path";
 import { readFileSync } from "fs";
+import { IUser } from "../user/user.interface";
 
 const createPaymentIntoDB = async (body: IPayment) => {
   const isUserExist = await UserModel.findById(body.user);
 
   const newId = await generateUniqueId();
   if (isUserExist && newId) {
-    const paymentData: PaymentData = {
+    const paymentData: any = {
       ...body,
       transactionId: newId,
       isUserExist,
@@ -32,6 +33,11 @@ const createPaymentIntoDB = async (body: IPayment) => {
 
 const getAllPaymentsFromDB = async () => {
   const payments = await PaymentModel.find().populate("user");
+  return payments;
+};
+
+const myPaymentHistroy = async (id: string) => {
+  const payments = await PaymentModel.find({ user: id }).populate("user");
   return payments;
 };
 
@@ -91,7 +97,7 @@ const confirmationService = async (
     const paymentData = {
       user: paymentDataPayload.user,
       amount: Number(paymentDataPayload.price),
-      status: res && res.pay_status === "Successful" ? "Completed" : "Failed",
+      status: res && res.pay_status === "Successful" ? "Active" : "Expired",
       transactionId: paymentDataPayload.transactionId,
       planTitle: paymentDataPayload.title,
       planPrice: Number(paymentDataPayload.price),
@@ -102,13 +108,13 @@ const confirmationService = async (
       throw new Error("Invalid price data: amount or planPrice is NaN.");
     }
 
-    await UserModel.findByIdAndUpdate(
-      { _id: paymentData.user },
-      { isVerified: true },
-    );
-    await PaymentModel.create(paymentData);
-
     if (res && res.pay_status === "Successful") {
+      await UserModel.findByIdAndUpdate(
+        { _id: paymentData.user },
+        { isVerified: true },
+      );
+
+      await PaymentModel.create(paymentData);
       message = "Payment successful";
       const filePath = join(__dirname, "../../../views/confirmation.html");
       let template = readFileSync(filePath, "utf-8");
@@ -118,7 +124,6 @@ const confirmationService = async (
       throw new Error("Payment validation failed.");
     }
   } catch (error: any) {
-    console.error("Payment Error:", error.message);
     message = "Payment failed";
 
     const filePath = join(__dirname, "../../../views/failConfirmation.html");
@@ -159,5 +164,5 @@ export const PaymentServices = {
   getSinglePaymentFromDB,
   deletePaymentFromDB,
   confirmationService,
-  // updatePaymentInDB, // Uncomment if needed
+  myPaymentHistroy,
 };

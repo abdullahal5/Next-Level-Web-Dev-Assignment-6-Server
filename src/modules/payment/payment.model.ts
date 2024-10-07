@@ -18,8 +18,8 @@ const PaymentSchema = new Schema<IPayment>(
     },
     status: {
       type: String,
-      enum: ["Pending", "Completed", "Failed"],
-      default: "Pending",
+      enum: ["Active", "Expired"],
+      default: "Active",
     },
     transactionId: {
       type: String,

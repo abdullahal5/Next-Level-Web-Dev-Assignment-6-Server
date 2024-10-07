@@ -2,6 +2,8 @@
 import axios from "axios";
 import config from "../../config";
 import { PaymentData } from "./payment.interface";
+import { PaymentModel } from "./payment.model";
+import { UserModel } from "../user/user.model";
 
 export const generateUniqueId = async () => {
   const now = new Date();
@@ -88,3 +90,25 @@ export function calculateExpiryDate(expiry: string) {
     return expiry;
   }
 }
+
+export const updateExpiredPayments = async () => {
+  const currentDate = new Date();
+
+  const expiredPayments = await PaymentModel.find({
+    expiryDate: { $lt: currentDate },
+    status: "Active",
+  }).populate("user");
+
+  await Promise.all(
+    expiredPayments.map(async (payment) => {
+      await UserModel.findByIdAndUpdate(
+        { _id: payment.user._id },
+        { isVerified: false },
+      );
+      await PaymentModel.findByIdAndUpdate(
+        { _id: payment._id },
+        { status: "Expired" },
+      );
+    }),
+  );
+};

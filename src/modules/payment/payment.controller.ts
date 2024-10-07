@@ -14,6 +14,17 @@ const createPayment = catchAsync(async (req, res) => {
   });
 });
 
+const myPayment = catchAsync(async (req, res) => {
+  const result = await PaymentServices.myPaymentHistroy(req.user?.userId);
+
+  SendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "My Payment retrieved successfully",
+    data: result,
+  });
+});
+
 const getSinglePayment = catchAsync(async (req, res) => {
   const paymentId = req.params.id;
   const result = await PaymentServices.getSinglePaymentFromDB(paymentId);
@@ -42,7 +53,7 @@ const confirmationController = catchAsync(async (req, res) => {
   const result = await PaymentServices.confirmationService(
     transactionId as string,
     status as string,
-    payload as string
+    payload as string,
   );
 
   res.send(result);
@@ -81,7 +92,7 @@ export const PaymentController = {
   createPayment,
   getSinglePayment,
   getAllPayments,
-  // updatePayment, // Uncomment if implemented
+  myPayment,
   deletePayment,
   confirmationController,
 };
