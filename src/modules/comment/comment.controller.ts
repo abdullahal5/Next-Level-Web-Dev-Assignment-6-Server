@@ -37,20 +37,18 @@ const getAllComments = catchAsync(async (req, res) => {
   });
 });
 
-// const updateComment = catchAsync(async (req, res) => {
-//   const commentId = req.params.id;
-//   const userId = req.user.userId as JwtPayload;
-//   const userRole = req.user.role;
+const updateComment = catchAsync(async (req, res) => {
+  const commentId = req.params.id;
 
-//   const result = await CommentServices.updateCommentInDB(commentId, req.body, userId, userRole);
+  const result = await CommentServices.updateCommentInDB(commentId, req.body);
 
-//   SendResponse(res, {
-//     success: true,
-//     statusCode: httpStatus.OK,
-//     message: "Comment updated successfully",
-//     data: result,
-//   });
-// });
+  SendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Comment updated successfully",
+    data: result,
+  });
+});
 
 // const incrementVote = catchAsync(async (req, res) => {
 //   const commentId = req.params.id;
@@ -84,7 +82,7 @@ export const CommentController = {
   createComment,
   getSingleComment,
   getAllComments,
-  //   updateComment,
+  updateComment,
   //   incrementVote,
   deleteComment,
 };

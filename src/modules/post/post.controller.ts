@@ -75,6 +75,17 @@ const upvoteAndDownvote = catchAsync(async (req, res) => {
   });
 });
 
+const getMyPost = catchAsync(async (req, res) => {
+  const user = await postServices.getMypost(req.user?.userId);
+
+  SendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Favourite",
+    data: user,
+  });
+});
+
 export const PostController = {
   createPost,
   updatePost,
@@ -82,4 +93,5 @@ export const PostController = {
   getSinglePost,
   deletePost,
   upvoteAndDownvote,
+  getMyPost,
 };

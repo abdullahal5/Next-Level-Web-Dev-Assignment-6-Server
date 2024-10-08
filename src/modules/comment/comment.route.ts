@@ -13,6 +13,7 @@ router.post(
   CommentController.createComment,
 );
 
+router.put("/update/:id", CommentController.updateComment);
 router.get("/get-all", CommentController.getAllComments);
 
 router.get("/get-single/:id", CommentController.getSingleComment);

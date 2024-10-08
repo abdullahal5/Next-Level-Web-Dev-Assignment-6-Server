@@ -48,9 +48,8 @@ const PostSchema = new Schema<IPost>(
       type: Boolean,
       default: false,
     },
-    images: {
-      type: [String],
-      default: [],
+    thumbnail: {
+      type: String,
     },
   },
   {

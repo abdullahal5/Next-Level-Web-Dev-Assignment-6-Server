@@ -11,6 +11,6 @@ export interface IPost {
   downvotes: number;
   commentsCount: number;
   isPremium: boolean;
-  images?: string[];
+  thumbnail: string;
   comments: mongoose.Types.ObjectId[];
 }

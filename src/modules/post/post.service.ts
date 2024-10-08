@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import { IPost } from "./post.interface";
 import PostModel from "./post.model";
 import AppError from "../../errors/AppError";
+import mongoose from "mongoose";
 
 const createPostIntoDB = async (body: IPost) => {
   const result = await PostModel.create(body);
@@ -31,6 +32,7 @@ const getPostByIdFromDB = async (id: string) => {
 };
 
 const deletePostFromDB = async (id: string) => {
+  console.log(id)
   const result = await PostModel.findByIdAndDelete(id);
   return result;
 };
@@ -49,6 +51,12 @@ const upvotesAndDownvotesFromDB = async (postID: string, voteType: string) => {
   }
 };
 
+const getMypost = async (userId: string) => {
+  const objectId = new mongoose.Types.ObjectId(userId);
+  const result = await PostModel.find({ author: objectId }).populate("author");
+  return result;
+};
+
 export const postServices = {
   createPostIntoDB,
   updatePostInDB,
@@ -56,4 +64,5 @@ export const postServices = {
   getPostByIdFromDB,
   deletePostFromDB,
   upvotesAndDownvotesFromDB,
+  getMypost,
 };

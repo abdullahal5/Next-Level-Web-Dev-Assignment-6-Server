@@ -12,10 +12,19 @@ router.post(
   PostController.createPost,
 );
 
+router.get(
+  "/get-my",
+  auth(User_Role.admin, User_Role.user),
+  PostController.getMyPost,
+);
 router.get("/get-all", PostController.getAllPosts);
 router.get("/get-single/:id", PostController.getSinglePost);
-router.put("/update", PostController.updatePost);
+router.put(
+  "/update/:id",
+  auth(User_Role.admin, User_Role.user),
+  PostController.updatePost,
+);
 router.put("/upvoteDownvote/:id", PostController.upvoteAndDownvote);
-router.delete("/delete/:id", auth(User_Role.admin), PostController.deletePost);
+router.delete("/delete/:id", auth(User_Role.admin, User_Role.user), PostController.deletePost);
 
 export const PostRoutes = router;

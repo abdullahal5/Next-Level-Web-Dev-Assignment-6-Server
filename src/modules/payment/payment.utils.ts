@@ -12,7 +12,7 @@ export const generateUniqueId = async () => {
 
   const timestamp = Date.now();
 
-  const generateRandomString = (length: number): string => {
+  const generateRandomString = (length: number) => {
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
     let result = "";
     for (let i = 0; i < length; i++) {
@@ -42,13 +42,13 @@ export const initiatePayment = async (payload: PaymentData) => {
     desc: "Merchant Registration Payment",
     cus_name: payload?.isUserExist?.username,
     cus_email: payload.isUserExist?.email,
-    cus_add1: payload.isUserExist?.location,
-    cus_add2: payload.isUserExist?.location,
+    cus_add1: payload.isUserExist?.location || "Dhaka, Bangladesh",
+    cus_add2: payload.isUserExist?.location|| "Dhaka, Bangladesh",
     cus_city: "Dhaka",
     cus_state: "Dhaka",
     cus_postcode: "1206",
     cus_country: "Bangladesh",
-    cus_phone: payload.isUserExist?.phone,
+    cus_phone: payload.isUserExist?.phone || "01914049327",
     type: "json",
   });
 

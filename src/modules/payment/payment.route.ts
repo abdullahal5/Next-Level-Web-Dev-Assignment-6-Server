@@ -14,6 +14,8 @@ router.get(
   PaymentController.myPayment,
 );
 
+router.get("/get-all", auth(User_Role.admin), PaymentController.getAllPayments);
+
 // router.get("/get-single/:id", CommentController.getSingleComment);
 // router.delete(
 //   "/delete/:id",

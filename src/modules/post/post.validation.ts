@@ -24,7 +24,7 @@ const PostValidationSchema = z.object({
     downvotes: z.number().default(0),
     commentsCount: z.number().default(0),
     isPremium: z.boolean().default(false),
-    images: z.array(z.string()).default([]),
+    thumbnail: z.string(),
   }),
 });
 

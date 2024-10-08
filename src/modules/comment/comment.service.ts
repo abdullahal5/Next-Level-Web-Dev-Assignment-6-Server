@@ -36,8 +36,6 @@ const getSingleCommentFromDB = async (commentId: string) => {
 const updateCommentInDB = async (
   commentId: string,
   updateBody: Partial<IComment>,
-  userId: string,
-  userRole: string,
 ) => {
   const comment = await CommentModel.findById(commentId);
 
@@ -45,16 +43,9 @@ const updateCommentInDB = async (
     throw new AppError(httpStatus.NOT_FOUND, "Comment not found");
   }
 
-  if (comment.userId.toString() !== userId && userRole !== "admin") {
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      "You are not authorized to edit this comment",
-    );
-  }
-
   const updatedComment = await CommentModel.findByIdAndUpdate(
-    commentId,
-    updateBody,
+    { _id: commentId },
+    { commentText: updateBody.commentText },
     {
       new: true,
       runValidators: true,
