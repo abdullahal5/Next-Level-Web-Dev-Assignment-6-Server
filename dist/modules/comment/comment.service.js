@@ -34,15 +34,12 @@ const getSingleCommentFromDB = (commentId) => __awaiter(void 0, void 0, void 0, 
     }
     return comment;
 });
-const updateCommentInDB = (commentId, updateBody, userId, userRole) => __awaiter(void 0, void 0, void 0, function* () {
+const updateCommentInDB = (commentId, updateBody) => __awaiter(void 0, void 0, void 0, function* () {
     const comment = yield comment_model_1.default.findById(commentId);
     if (!comment) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Comment not found");
     }
-    if (comment.userId.toString() !== userId && userRole !== "admin") {
-        throw new AppError_1.default(http_status_1.default.FORBIDDEN, "You are not authorized to edit this comment");
-    }
-    const updatedComment = yield comment_model_1.default.findByIdAndUpdate(commentId, updateBody, {
+    const updatedComment = yield comment_model_1.default.findByIdAndUpdate({ _id: commentId }, { commentText: updateBody.commentText }, {
         new: true,
         runValidators: true,
     });

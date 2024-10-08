@@ -8,6 +8,7 @@ const user_route_1 = require("../modules/user/user.route");
 const comment_route_1 = require("../modules/comment/comment.route");
 const post_route_1 = require("../modules/post/post.route");
 const payment_route_1 = require("../modules/payment/payment.route");
+const dasboard_route_1 = require("../modules/dashboard/dasboard.route");
 const router = express_1.default.Router();
 const moduleRoutes = [
     {
@@ -24,8 +25,12 @@ const moduleRoutes = [
     },
     {
         path: "/payment",
-        route: payment_route_1.PaymentRoute
-    }
+        route: payment_route_1.PaymentRoute,
+    },
+    {
+        path: "/dashboard",
+        route: dasboard_route_1.DashboardRoute,
+    },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
 exports.default = router;

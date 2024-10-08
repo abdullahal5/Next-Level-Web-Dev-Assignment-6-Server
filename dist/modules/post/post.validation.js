@@ -29,7 +29,7 @@ const PostValidationSchema = zod_1.z.object({
         downvotes: zod_1.z.number().default(0),
         commentsCount: zod_1.z.number().default(0),
         isPremium: zod_1.z.boolean().default(false),
-        images: zod_1.z.array(zod_1.z.string()).default([]),
+        thumbnail: zod_1.z.string(),
     }),
 });
 exports.PostValidation = {

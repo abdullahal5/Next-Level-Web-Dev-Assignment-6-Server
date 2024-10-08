@@ -52,13 +52,13 @@ const initiatePayment = (payload) => __awaiter(void 0, void 0, void 0, function*
         desc: "Merchant Registration Payment",
         cus_name: (_a = payload === null || payload === void 0 ? void 0 : payload.isUserExist) === null || _a === void 0 ? void 0 : _a.username,
         cus_email: (_b = payload.isUserExist) === null || _b === void 0 ? void 0 : _b.email,
-        cus_add1: (_c = payload.isUserExist) === null || _c === void 0 ? void 0 : _c.location,
-        cus_add2: (_d = payload.isUserExist) === null || _d === void 0 ? void 0 : _d.location,
+        cus_add1: ((_c = payload.isUserExist) === null || _c === void 0 ? void 0 : _c.location) || "Dhaka, Bangladesh",
+        cus_add2: ((_d = payload.isUserExist) === null || _d === void 0 ? void 0 : _d.location) || "Dhaka, Bangladesh",
         cus_city: "Dhaka",
         cus_state: "Dhaka",
         cus_postcode: "1206",
         cus_country: "Bangladesh",
-        cus_phone: (_e = payload.isUserExist) === null || _e === void 0 ? void 0 : _e.phone,
+        cus_phone: ((_e = payload.isUserExist) === null || _e === void 0 ? void 0 : _e.phone) || "01914049327",
         type: "json",
     });
     return response.data;

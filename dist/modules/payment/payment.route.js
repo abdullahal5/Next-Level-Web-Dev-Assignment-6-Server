@@ -12,6 +12,7 @@ const router = express_1.default.Router();
 router.post("/create", payment_controller_1.PaymentController.createPayment);
 router.post("/confirmation", payment_controller_1.PaymentController.confirmationController);
 router.get("/get-myPaymentHistory", (0, auth_1.default)(interface_1.User_Role.admin, interface_1.User_Role.user), payment_controller_1.PaymentController.myPayment);
+router.get("/get-all", (0, auth_1.default)(interface_1.User_Role.admin), payment_controller_1.PaymentController.getAllPayments);
 // router.get("/get-single/:id", CommentController.getSingleComment);
 // router.delete(
 //   "/delete/:id",

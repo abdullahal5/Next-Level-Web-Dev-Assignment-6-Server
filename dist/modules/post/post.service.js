@@ -16,6 +16,7 @@ exports.postServices = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const post_model_1 = __importDefault(require("./post.model"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const createPostIntoDB = (body) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield post_model_1.default.create(body);
     return result;
@@ -40,6 +41,7 @@ const getPostByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* ()
     return result;
 });
 const deletePostFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(id);
     const result = yield post_model_1.default.findByIdAndDelete(id);
     return result;
 });
@@ -55,6 +57,11 @@ const upvotesAndDownvotesFromDB = (postID, voteType) => __awaiter(void 0, void 0
         yield post_model_1.default.updateOne({ _id: postID }, { $inc: { downvotes: 1 } });
     }
 });
+const getMypost = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const objectId = new mongoose_1.default.Types.ObjectId(userId);
+    const result = yield post_model_1.default.find({ author: objectId }).populate("author");
+    return result;
+});
 exports.postServices = {
     createPostIntoDB,
     updatePostInDB,
@@ -62,4 +69,5 @@ exports.postServices = {
     getPostByIdFromDB,
     deletePostFromDB,
     upvotesAndDownvotesFromDB,
+    getMypost,
 };

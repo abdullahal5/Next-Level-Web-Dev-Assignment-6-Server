@@ -12,6 +12,7 @@ const auth_1 = __importDefault(require("../../middlewares/auth"));
 const interface_1 = require("../../interface");
 const router = express_1.default.Router();
 router.post("/create", (0, validateRequest_1.default)(comment_validation_1.CommentValidation.commentSchema), comment_controller_1.CommentController.createComment);
+router.put("/update/:id", comment_controller_1.CommentController.updateComment);
 router.get("/get-all", comment_controller_1.CommentController.getAllComments);
 router.get("/get-single/:id", comment_controller_1.CommentController.getSingleComment);
 router.delete("/delete/:id", (0, auth_1.default)(interface_1.User_Role.user, interface_1.User_Role.admin), comment_controller_1.CommentController.deleteComment);

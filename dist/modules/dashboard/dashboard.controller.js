@@ -12,25 +12,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SendEmail = void 0;
-const nodemailer_1 = __importDefault(require("nodemailer"));
-const config_1 = __importDefault(require("../config"));
-const SendEmail = (to, html) => __awaiter(void 0, void 0, void 0, function* () {
-    const transporter = nodemailer_1.default.createTransport({
-        host: config_1.default.SMTP_HOST,
-        port: Number(config_1.default.SMTP_PORT),
-        secure: config_1.default.NODE_ENV === "production",
-        auth: {
-            user: config_1.default.SMTP_USER,
-            pass: config_1.default.SMTP_PASS,
-        },
+exports.DashboardController = void 0;
+const http_status_1 = __importDefault(require("http-status"));
+const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
+const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
+const dashboard_service_1 = require("./dashboard.service");
+const dashbaordContent = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const payments = yield dashboard_service_1.DashboardServices.dashboardServices((_a = req.user) === null || _a === void 0 ? void 0 : _a.userId);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Dashboard Data retireved successfully",
+        data: payments,
     });
-    yield transporter.sendMail({
-        from: "Gardening HUB",
-        to,
-        subject: "Reset your password within 10 mins!",
-        text: "",
-        html,
-    });
-});
-exports.SendEmail = SendEmail;
+}));
+exports.DashboardController = {
+    dashbaordContent,
+};

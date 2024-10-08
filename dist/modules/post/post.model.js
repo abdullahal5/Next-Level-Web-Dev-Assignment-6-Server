@@ -70,9 +70,8 @@ const PostSchema = new mongoose_1.Schema({
         type: Boolean,
         default: false,
     },
-    images: {
-        type: [String],
-        default: [],
+    thumbnail: {
+        type: String,
     },
 }, {
     timestamps: true,

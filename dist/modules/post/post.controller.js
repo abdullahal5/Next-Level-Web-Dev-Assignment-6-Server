@@ -74,6 +74,16 @@ const upvoteAndDownvote = (0, catchAsync_1.default)((req, res) => __awaiter(void
         data: user,
     });
 }));
+const getMyPost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const user = yield post_service_1.postServices.getMypost((_a = req.user) === null || _a === void 0 ? void 0 : _a.userId);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Favourite",
+        data: user,
+    });
+}));
 exports.PostController = {
     createPost,
     updatePost,
@@ -81,4 +91,5 @@ exports.PostController = {
     getSinglePost,
     deletePost,
     upvoteAndDownvote,
+    getMyPost,
 };
