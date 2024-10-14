@@ -24,7 +24,15 @@ router.put(
   auth(User_Role.admin, User_Role.user),
   PostController.updatePost,
 );
-router.put("/upvoteDownvote/:id", PostController.upvoteAndDownvote);
-router.delete("/delete/:id", auth(User_Role.admin, User_Role.user), PostController.deletePost);
+router.put(
+  "/upvoteDownvote/:id",
+  auth(User_Role.admin, User_Role.user),
+  PostController.upvoteAndDownvote,
+);
+router.delete(
+  "/delete/:id",
+  auth(User_Role.admin, User_Role.user),
+  PostController.deletePost,
+);
 
 export const PostRoutes = router;

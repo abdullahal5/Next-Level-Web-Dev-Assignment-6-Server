@@ -16,6 +16,6 @@ router.get("/get-my", (0, auth_1.default)(interface_1.User_Role.admin, interface
 router.get("/get-all", post_controller_1.PostController.getAllPosts);
 router.get("/get-single/:id", post_controller_1.PostController.getSinglePost);
 router.put("/update/:id", (0, auth_1.default)(interface_1.User_Role.admin, interface_1.User_Role.user), post_controller_1.PostController.updatePost);
-router.put("/upvoteDownvote/:id", post_controller_1.PostController.upvoteAndDownvote);
+router.put("/upvoteDownvote/:id", (0, auth_1.default)(interface_1.User_Role.admin, interface_1.User_Role.user), post_controller_1.PostController.upvoteAndDownvote);
 router.delete("/delete/:id", (0, auth_1.default)(interface_1.User_Role.admin, interface_1.User_Role.user), post_controller_1.PostController.deletePost);
 exports.PostRoutes = router;

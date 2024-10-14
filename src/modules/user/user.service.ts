@@ -2,11 +2,7 @@ import bcrypt from "bcrypt";
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import { UserModel } from "./user.model";
-import {
-  ILoginInfo,
-  IUser,
-  JwtpayloadData,
-} from "./user.interface";
+import { ILoginInfo, IUser, JwtpayloadData } from "./user.interface";
 import { createToken, verifyToken } from "./user.utility";
 import config from "../../config";
 import { JwtPayload } from "jsonwebtoken";
@@ -311,7 +307,7 @@ const forgetPassword = async (email: string) => {
     "10m",
   );
 
-  const resetUILink = `${config.Reset_pass_ui_link}/reset-password?id=${user?._id}&token=${resetToken}`;
+  const resetUILink = `${config.Reset_pass_ui_link}/reset-password?id=${user?._id}&token=${encodeURIComponent(resetToken)}`;
 
   const emailHTML = `
     <div style="text-align: center; padding: 20px;">
@@ -324,7 +320,7 @@ const forgetPassword = async (email: string) => {
     </div>
   `;
 
-  SendEmail(user?.email as string, emailHTML);
+  await SendEmail(user?.email as string, emailHTML);
 };
 
 const resetPassword = async (

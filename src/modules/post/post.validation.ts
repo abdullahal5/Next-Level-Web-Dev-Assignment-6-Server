@@ -20,8 +20,8 @@ const PostValidationSchema = z.object({
     category: z.string({
       required_error: "Category is required",
     }),
-    upvotes: z.number().default(0),
-    downvotes: z.number().default(0),
+    upvotes: z.array(z.string()).optional(),
+    downvotes: z.array(z.string()).optional(),
     commentsCount: z.number().default(0),
     isPremium: z.boolean().default(false),
     thumbnail: z.string(),

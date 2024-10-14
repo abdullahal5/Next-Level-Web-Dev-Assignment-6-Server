@@ -19,7 +19,7 @@ const SendEmail = (to, html) => __awaiter(void 0, void 0, void 0, function* () {
     const transporter = nodemailer_1.default.createTransport({
         host: config_1.default.SMTP_HOST,
         port: Number(config_1.default.SMTP_PORT),
-        secure: config_1.default.NODE_ENV === "production",
+        secure: false,
         auth: {
             user: config_1.default.SMTP_USER,
             pass: config_1.default.SMTP_PASS,

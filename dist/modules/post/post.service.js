@@ -45,16 +45,37 @@ const deletePostFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () 
     const result = yield post_model_1.default.findByIdAndDelete(id);
     return result;
 });
-const upvotesAndDownvotesFromDB = (postID, voteType) => __awaiter(void 0, void 0, void 0, function* () {
-    const isExistPost = yield post_model_1.default.findById(postID);
-    if (!isExistPost) {
-        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Not found");
+const upvotesAndDownvotesFromDB = (postID, userID, voteType) => __awaiter(void 0, void 0, void 0, function* () {
+    const userObjectId = new mongoose_1.default.Types.ObjectId(userID);
+    const post = yield post_model_1.default.findById(postID);
+    if (!post) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Post not found");
     }
-    if (voteType === "increment") {
-        yield post_model_1.default.updateOne({ _id: postID }, { $inc: { upvotes: 1 } });
+    const upvotes = post.upvotes || [];
+    const downvotes = post.downvotes || [];
+    const hasUpvoted = upvotes.some((upvote) => upvote.equals(userObjectId));
+    const hasDownvoted = downvotes.some((downvote) => downvote.equals(userObjectId));
+    if (voteType === "upvote") {
+        if (hasUpvoted) {
+            yield post_model_1.default.updateOne({ _id: postID }, { $pull: { upvotes: userObjectId } });
+        }
+        else {
+            if (hasDownvoted) {
+                yield post_model_1.default.updateOne({ _id: postID }, { $pull: { downvotes: userObjectId } });
+            }
+            yield post_model_1.default.updateOne({ _id: postID }, { $push: { upvotes: userObjectId } });
+        }
     }
-    else {
-        yield post_model_1.default.updateOne({ _id: postID }, { $inc: { downvotes: 1 } });
+    else if (voteType === "downvote") {
+        if (hasDownvoted) {
+            yield post_model_1.default.updateOne({ _id: postID }, { $pull: { downvotes: userObjectId } });
+        }
+        else {
+            if (hasUpvoted) {
+                yield post_model_1.default.updateOne({ _id: postID }, { $pull: { upvotes: userObjectId } });
+            }
+            yield post_model_1.default.updateOne({ _id: postID }, { $push: { downvotes: userObjectId } });
+        }
     }
 });
 const getMypost = (userId) => __awaiter(void 0, void 0, void 0, function* () {

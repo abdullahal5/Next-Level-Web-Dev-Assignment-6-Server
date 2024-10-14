@@ -187,7 +187,7 @@ const forgetPassword = (email) => __awaiter(void 0, void 0, void 0, function* ()
         profileImage: user === null || user === void 0 ? void 0 : user.profilePicture,
     };
     const resetToken = (0, user_utility_1.createToken)(jwtPayload, config_1.default.Access_Token, "10m");
-    const resetUILink = `${config_1.default.Reset_pass_ui_link}/reset-password?id=${user === null || user === void 0 ? void 0 : user._id}&token=${resetToken}`;
+    const resetUILink = `${config_1.default.Reset_pass_ui_link}/reset-password?id=${user === null || user === void 0 ? void 0 : user._id}&token=${encodeURIComponent(resetToken)}`;
     const emailHTML = `
     <div style="text-align: center; padding: 20px;">
       <h2>Password Reset</h2>
@@ -198,7 +198,7 @@ const forgetPassword = (email) => __awaiter(void 0, void 0, void 0, function* ()
       <p>This link will expire in 10 minutes.</p>
     </div>
   `;
-    (0, sendEmail_1.SendEmail)(user === null || user === void 0 ? void 0 : user.email, emailHTML);
+    yield (0, sendEmail_1.SendEmail)(user === null || user === void 0 ? void 0 : user.email, emailHTML);
 });
 const resetPassword = (payload, token) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.UserModel.findOne({ email: payload.email });

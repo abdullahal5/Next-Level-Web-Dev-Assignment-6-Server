@@ -64,6 +64,7 @@ const deletePost = catchAsync(async (req, res) => {
 const upvoteAndDownvote = catchAsync(async (req, res) => {
   const user = await postServices.upvotesAndDownvotesFromDB(
     req.params.id,
+    req.user?.userId,
     req.body.type,
   );
 

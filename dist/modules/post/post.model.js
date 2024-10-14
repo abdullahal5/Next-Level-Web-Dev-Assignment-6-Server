@@ -55,12 +55,14 @@ const PostSchema = new mongoose_1.Schema({
         required: true,
     },
     upvotes: {
-        type: Number,
-        default: 0,
+        type: [mongoose_1.Schema.Types.ObjectId],
+        ref: "User",
+        default: [],
     },
     downvotes: {
-        type: Number,
-        default: 0,
+        type: [mongoose_1.Schema.Types.ObjectId],
+        ref: "User",
+        default: [],
     },
     commentsCount: {
         type: Number,

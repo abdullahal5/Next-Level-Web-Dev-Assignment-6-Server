@@ -32,22 +32,70 @@ const getPostByIdFromDB = async (id: string) => {
 };
 
 const deletePostFromDB = async (id: string) => {
-  console.log(id)
+  console.log(id);
   const result = await PostModel.findByIdAndDelete(id);
   return result;
 };
 
-const upvotesAndDownvotesFromDB = async (postID: string, voteType: string) => {
-  const isExistPost = await PostModel.findById(postID);
+const upvotesAndDownvotesFromDB = async (
+  postID: string,
+  userID: string,
+  voteType: "upvote" | "downvote",
+) => {
+  const userObjectId = new mongoose.Types.ObjectId(userID);
 
-  if (!isExistPost) {
-    throw new AppError(httpStatus.NOT_FOUND, "Not found");
+  const post = await PostModel.findById(postID);
+  if (!post) {
+    throw new AppError(httpStatus.NOT_FOUND, "Post not found");
   }
 
-  if (voteType === "increment") {
-    await PostModel.updateOne({ _id: postID }, { $inc: { upvotes: 1 } });
-  } else {
-    await PostModel.updateOne({ _id: postID }, { $inc: { downvotes: 1 } });
+  const upvotes = post.upvotes || [];
+  const downvotes = post.downvotes || [];
+
+  const hasUpvoted = upvotes.some((upvote: mongoose.Types.ObjectId) =>
+    upvote.equals(userObjectId),
+  );
+  const hasDownvoted = downvotes.some((downvote: mongoose.Types.ObjectId) =>
+    downvote.equals(userObjectId),
+  );
+
+  if (voteType === "upvote") {
+    if (hasUpvoted) {
+      await PostModel.updateOne(
+        { _id: postID },
+        { $pull: { upvotes: userObjectId } },
+      );
+    } else {
+      if (hasDownvoted) {
+        await PostModel.updateOne(
+          { _id: postID },
+          { $pull: { downvotes: userObjectId } },
+        );
+      }
+
+      await PostModel.updateOne(
+        { _id: postID },
+        { $push: { upvotes: userObjectId } },
+      );
+    }
+  } else if (voteType === "downvote") {
+    if (hasDownvoted) {
+      await PostModel.updateOne(
+        { _id: postID },
+        { $pull: { downvotes: userObjectId } },
+      );
+    } else {
+      if (hasUpvoted) {
+        await PostModel.updateOne(
+          { _id: postID },
+          { $pull: { upvotes: userObjectId } },
+        );
+      }
+      await PostModel.updateOne(
+        { _id: postID },
+        { $push: { downvotes: userObjectId } },
+      );
+    }
   }
 };
 

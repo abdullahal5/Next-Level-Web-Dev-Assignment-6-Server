@@ -7,8 +7,8 @@ export interface IPost {
   author: mongoose.Types.ObjectId;
   tags?: string[];
   category: string;
-  upvotes: number;
-  downvotes: number;
+  upvotes: mongoose.Types.ObjectId[];
+  downvotes: mongoose.Types.ObjectId[];
   commentsCount: number;
   isPremium: boolean;
   thumbnail: string;

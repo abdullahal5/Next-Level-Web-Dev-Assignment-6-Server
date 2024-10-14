@@ -66,7 +66,8 @@ const deletePost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
     });
 }));
 const upvoteAndDownvote = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield post_service_1.postServices.upvotesAndDownvotesFromDB(req.params.id, req.body.type);
+    var _a;
+    const user = yield post_service_1.postServices.upvotesAndDownvotesFromDB(req.params.id, (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId, req.body.type);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,

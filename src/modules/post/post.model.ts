@@ -33,12 +33,14 @@ const PostSchema = new Schema<IPost>(
       required: true,
     },
     upvotes: {
-      type: Number,
-      default: 0,
+      type: [Schema.Types.ObjectId],
+      ref: "User",
+      default: [],
     },
     downvotes: {
-      type: Number,
-      default: 0,
+      type: [Schema.Types.ObjectId],
+      ref: "User",
+      default: [],
     },
     commentsCount: {
       type: Number,
