@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postServices = void 0;
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const http_status_1 = __importDefault(require("http-status"));
 const post_model_1 = __importDefault(require("./post.model"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
@@ -25,9 +26,24 @@ const updatePostInDB = (id, body) => __awaiter(void 0, void 0, void 0, function*
     const result = yield post_model_1.default.findByIdAndUpdate(id, body, { new: true });
     return result;
 });
-const getAllPostsFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield post_model_1.default.find().populate("author comments");
-    return result;
+const getAllPostsFromDB = (searchQuery, categoriesQuery) => __awaiter(void 0, void 0, void 0, function* () {
+    const filters = {};
+    if (searchQuery) {
+        const searchRegex = new RegExp(searchQuery, "i");
+        filters.$or = [
+            { title: { $regex: searchRegex } },
+            { bio: { $regex: searchRegex } },
+            { category: { $regex: searchRegex } },
+        ];
+    }
+    if (categoriesQuery && categoriesQuery.toLowerCase() !== "all") {
+        const categoryRegex = new RegExp(categoriesQuery, "i");
+        filters.category = { $regex: categoryRegex };
+    }
+    const results = yield post_model_1.default.find(filters)
+        .populate("author comments")
+        .sort({ createdAt: -1 });
+    return results;
 });
 const getPostByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield post_model_1.default.findById(id)

@@ -27,7 +27,10 @@ const updatePost = catchAsync(async (req, res) => {
 });
 
 const getAllPosts = catchAsync(async (req, res) => {
-  const result = await postServices.getAllPostsFromDB();
+  const result = await postServices.getAllPostsFromDB(
+    req.query.searchTerm as string,
+    req.query.category as string,
+  );
 
   SendResponse(res, {
     success: true,

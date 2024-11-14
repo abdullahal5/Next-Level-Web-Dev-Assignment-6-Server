@@ -37,7 +37,7 @@ const createUserSchema = zod_1.z.object({
             .optional()
             .default([]),
         isVerified: zod_1.z.boolean().default(false),
-        dateOfBirth: zod_1.z.date().optional(),
+        dateOfBirth: zod_1.z.string(),
         location: zod_1.z.string().optional(),
         gender: zod_1.z.enum(["Male", "Female", "Other"]).optional(),
         status: zod_1.z.enum(["Active", "Blocked"]).optional(),

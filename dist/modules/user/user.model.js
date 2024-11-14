@@ -98,7 +98,7 @@ const UserSchema = new mongoose_1.Schema({
         default: false,
     },
     dateOfBirth: {
-        type: Date,
+        type: String,
         required: false,
     },
     location: {

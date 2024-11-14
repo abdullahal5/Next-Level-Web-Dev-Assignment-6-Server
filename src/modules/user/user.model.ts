@@ -63,7 +63,7 @@ const UserSchema = new Schema<IUser, IUserModel>(
       default: false,
     },
     dateOfBirth: {
-      type: Date,
+      type: String,
       required: false,
     },
     location: {

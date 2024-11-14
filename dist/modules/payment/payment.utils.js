@@ -104,7 +104,8 @@ const updateExpiredPayments = () => __awaiter(void 0, void 0, void 0, function* 
         status: "Active",
     }).populate("user");
     yield Promise.all(expiredPayments.map((payment) => __awaiter(void 0, void 0, void 0, function* () {
-        yield user_model_1.UserModel.findByIdAndUpdate({ _id: payment.user._id }, { isVerified: false });
+        var _a;
+        yield user_model_1.UserModel.findByIdAndUpdate({ _id: (_a = payment.user) === null || _a === void 0 ? void 0 : _a._id }, { isVerified: false });
         yield payment_model_1.PaymentModel.findByIdAndUpdate({ _id: payment._id }, { status: "Expired" });
     })));
 });

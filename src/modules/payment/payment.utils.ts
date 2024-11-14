@@ -102,7 +102,7 @@ export const updateExpiredPayments = async () => {
   await Promise.all(
     expiredPayments.map(async (payment) => {
       await UserModel.findByIdAndUpdate(
-        { _id: payment.user._id },
+        { _id: payment.user?._id },
         { isVerified: false },
       );
       await PaymentModel.findByIdAndUpdate(

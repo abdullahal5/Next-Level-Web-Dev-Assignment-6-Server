@@ -32,7 +32,7 @@ const createUserSchema = z.object({
       .optional()
       .default([]),
     isVerified: z.boolean().default(false),
-    dateOfBirth: z.date().optional(),
+    dateOfBirth: z.string(),
     location: z.string().optional(),
     gender: z.enum(["Male", "Female", "Other"]).optional(),
     status: z.enum(["Active", "Blocked"]).optional(),

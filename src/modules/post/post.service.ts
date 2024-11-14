@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import { IPost } from "./post.interface";
 import PostModel from "./post.model";
@@ -14,9 +15,32 @@ const updatePostInDB = async (id: string, body: Partial<IPost>) => {
   return result;
 };
 
-const getAllPostsFromDB = async () => {
-  const result = await PostModel.find().populate("author comments");
-  return result;
+const getAllPostsFromDB = async (
+  searchQuery?: string,
+  categoriesQuery?: string,
+) => {
+  const filters: any = {};
+
+
+  if (searchQuery) {
+    const searchRegex = new RegExp(searchQuery, "i");
+    filters.$or = [
+      { title: { $regex: searchRegex } },
+      { bio: { $regex: searchRegex } },
+      { category: { $regex: searchRegex } },
+    ];
+  }
+
+  if (categoriesQuery && categoriesQuery.toLowerCase() !== "all") {
+    const categoryRegex = new RegExp(categoriesQuery, "i");
+    filters.category = { $regex: categoryRegex };
+  }
+
+  const results = await PostModel.find(filters)
+    .populate("author comments")
+    .sort({ createdAt: -1 });
+
+  return results;
 };
 
 const getPostByIdFromDB = async (id: string) => {
