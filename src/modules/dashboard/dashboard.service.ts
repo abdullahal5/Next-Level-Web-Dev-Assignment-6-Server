@@ -1,35 +1,86 @@
+import mongoose from "mongoose";
 import { PaymentModel } from "../payment/payment.model";
 import PostModel from "../post/post.model";
 import { UserModel } from "../user/user.model";
 
-const dashboardServices = async (id: string) => {
-  const user = await UserModel.findById(id);
+const dashboardServices = async (userId: string, query: string) => {
+  try {
+    const findSingleUser = await UserModel.findOne({ _id: userId });
 
-  if (user?.role === "user") {
-    const userPostsCount = await PostModel.countDocuments({ userId: id });
-    const followerCount = user.followers?.length || 0;
-    const followingCount = user.following?.length || 0;
+    if (findSingleUser?.role === "user") {
+      if (query === "payments") {
+        const paymentData = await PaymentModel.aggregate([
+          {
+            $match: { user: new mongoose.Types.ObjectId(userId) },
+          },
+          {
+            $project: {
+              amount: 1,
+              status: 1,
+              planTitle: 1,
+            },
+          },
+        ]);
 
-    return {
-      postCount: userPostsCount,
-      followers: followerCount,
-      following: followingCount,
-    };
-  } else if (user?.role === "admin") {
-    const totalPostsCount = await PostModel.countDocuments();
-    const totalUsersCount = await UserModel.countDocuments();
-    const totalRevenue = await PaymentModel.aggregate([
-      { $group: { _id: null, totalRevenue: { $sum: "$amount" } } },
-    ]);
+        return { paymentData };
+      } else if (query === "posts") {
+        const postData = await PostModel.aggregate([
+          {
+            $match: { author: new mongoose.Types.ObjectId(userId) },
+          },
+          {
+            $project: {
+              title: 1,
+              upvotes: { $size: "$upvotes" },
+              downvotes: { $size: "$downvotes" },
+            },
+          },
+        ]);
+        return { postData };
+      }
+      if (query === "total") {
+        const paymentSummary = await PaymentModel.aggregate([
+          {
+            $match: { user: new mongoose.Types.ObjectId(userId) },
+          },
+          {
+            $group: {
+              _id: null,
+              totalPayments: { $sum: 1 },
+              totalAmount: { $sum: "$amount" },
+            },
+          },
+        ]);
 
-    return {
-      totalPosts: totalPostsCount,
-      totalUsers: totalUsersCount,
-      totalRevenue: totalRevenue[0]?.totalRevenue || 0,
-    };
+        const postSummary = await PostModel.aggregate([
+          {
+            $match: { author: new mongoose.Types.ObjectId(userId) },
+          },
+          {
+            $group: {
+              _id: null,
+              totalPosts: { $sum: 1 },
+              totalUpvotes: { $sum: { $size: "$upvotes" } },
+              totalDownvotes: { $sum: { $size: "$downvotes" } },
+            },
+          },
+        ]);
+
+        const dashboardData = {
+          totalPayments: paymentSummary[0]?.totalPayments || 0,
+          totalPaymentAmount: paymentSummary[0]?.totalAmount || 0,
+          totalPosts: postSummary[0]?.totalPosts || 0,
+          totalUpvotes: postSummary[0]?.totalUpvotes || 0,
+          totalDownvotes: postSummary[0]?.totalDownvotes || 0,
+        };
+
+        return { dashboardData };
+      }
+    }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error: unknown) {
+    throw new Error("Failed to fetch dashboard data");
   }
-
-  return null;
 };
 
 export const DashboardServices = {

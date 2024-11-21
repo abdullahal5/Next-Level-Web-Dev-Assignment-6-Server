@@ -4,7 +4,10 @@ import SendResponse from "../../utils/sendResponse";
 import { DashboardServices } from "./dashboard.service";
 
 const dashbaordContent = catchAsync(async (req, res) => {
-  const payments = await DashboardServices.dashboardServices(req.user?.userId);
+  const payments = await DashboardServices.dashboardServices(
+    req.user?.userId,
+    req.query.query as string,
+  );
 
   SendResponse(res, {
     success: true,
