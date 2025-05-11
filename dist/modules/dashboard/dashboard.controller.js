@@ -19,7 +19,7 @@ const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const dashboard_service_1 = require("./dashboard.service");
 const dashbaordContent = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const payments = yield dashboard_service_1.DashboardServices.dashboardServices((_a = req.user) === null || _a === void 0 ? void 0 : _a.userId);
+    const payments = yield dashboard_service_1.DashboardServices.dashboardServices((_a = req.user) === null || _a === void 0 ? void 0 : _a.userId, req.query.query);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,

@@ -13,35 +13,46 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DashboardServices = void 0;
+const mongoose_1 = __importDefault(require("mongoose"));
 const payment_model_1 = require("../payment/payment.model");
 const post_model_1 = __importDefault(require("../post/post.model"));
 const user_model_1 = require("../user/user.model");
-const dashboardServices = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
-    const user = yield user_model_1.UserModel.findById(id);
-    if ((user === null || user === void 0 ? void 0 : user.role) === "user") {
-        const userPostsCount = yield post_model_1.default.countDocuments({ userId: id });
-        const followerCount = ((_a = user.followers) === null || _a === void 0 ? void 0 : _a.length) || 0;
-        const followingCount = ((_b = user.following) === null || _b === void 0 ? void 0 : _b.length) || 0;
-        return {
-            postCount: userPostsCount,
-            followers: followerCount,
-            following: followingCount,
-        };
+const dashboardServices = (userId, p0) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c, _d;
+    try {
+        const findSingleUser = yield user_model_1.UserModel.findOne({ _id: userId });
+        if (!findSingleUser) {
+            throw new Error("User not found");
+        }
+        if ((findSingleUser === null || findSingleUser === void 0 ? void 0 : findSingleUser.role) === "user") {
+            const totalPosts = yield post_model_1.default.countDocuments({ author: userId });
+            const totalFollowers = ((_a = findSingleUser.followers) === null || _a === void 0 ? void 0 : _a.length) || 0;
+            const totalFollowing = ((_b = findSingleUser.following) === null || _b === void 0 ? void 0 : _b.length) || 0;
+            const payments = yield payment_model_1.PaymentModel.aggregate([
+                { $match: { user: new mongoose_1.default.Types.ObjectId(userId) } },
+                { $group: { _id: null, totalAmount: { $sum: "$amount" } } },
+            ]);
+            const totalPayAmount = ((_c = payments[0]) === null || _c === void 0 ? void 0 : _c.totalAmount) || 0;
+            return { totalPosts, totalFollowers, totalFollowing, totalPayAmount };
+        }
+        else if ((findSingleUser === null || findSingleUser === void 0 ? void 0 : findSingleUser.role) === "admin") {
+            // For admin, return aggregated data for all users
+            const totalPosts = yield post_model_1.default.countDocuments();
+            const totalUsers = yield user_model_1.UserModel.countDocuments();
+            const payments = yield payment_model_1.PaymentModel.aggregate([
+                { $group: { _id: null, totalAmount: { $sum: "$amount" } } },
+            ]);
+            const totalPayAmount = ((_d = payments[0]) === null || _d === void 0 ? void 0 : _d.totalAmount) || 0;
+            return { totalPosts, totalUsers, totalPayAmount };
+        }
+        else {
+            throw new Error("User role is not recognized");
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
     }
-    else if ((user === null || user === void 0 ? void 0 : user.role) === "admin") {
-        const totalPostsCount = yield post_model_1.default.countDocuments();
-        const totalUsersCount = yield user_model_1.UserModel.countDocuments();
-        const totalRevenue = yield payment_model_1.PaymentModel.aggregate([
-            { $group: { _id: null, totalRevenue: { $sum: "$amount" } } },
-        ]);
-        return {
-            totalPosts: totalPostsCount,
-            totalUsers: totalUsersCount,
-            totalRevenue: ((_c = totalRevenue[0]) === null || _c === void 0 ? void 0 : _c.totalRevenue) || 0,
-        };
+    catch (error) {
+        throw new Error("Failed to fetch dashboard data");
     }
-    return null;
 });
 exports.DashboardServices = {
     dashboardServices,
